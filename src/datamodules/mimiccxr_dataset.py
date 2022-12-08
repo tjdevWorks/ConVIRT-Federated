@@ -45,6 +45,7 @@ class MIMICCXRDataset(torch.utils.data.Dataset):
         
         if self.tokenizer:
             tokenized_input_data = self.tokenizer(text, max_length=128, padding="max_length", truncation=True, return_tensors="pt")
+            tokenized_input_data = {k: v.squeeze() for k, v in tokenized_input_data.items()}
         
         return {'image':image, 'text': text, 'tokenized_data':tokenized_input_data}
 

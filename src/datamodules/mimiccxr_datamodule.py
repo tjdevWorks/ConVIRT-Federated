@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 from transformers import AutoTokenizer
 
-from mimiccxr_dataset import MIMICCXRDataset
+from .mimiccxr_dataset import MIMICCXRDataset
 
 class MIMICCXRDataModule(LightningDataModule):
     """Example of LightningDataModule for MNIST dataset.
@@ -38,11 +38,12 @@ class MIMICCXRDataModule(LightningDataModule):
 
     def __init__(
         self,
+        mimic_cxr_dataset_file:str,
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
         text_model_name:str = '',
-        train_val_split: Tuple[float, float] = [0.95,0.05]
+        train_val_split: Tuple[float, float] = [0.95,0.05],
         #cfg: dict = {},
     ):
         super(MIMICCXRDataModule,).__init__()
@@ -68,19 +69,24 @@ class MIMICCXRDataModule(LightningDataModule):
         self.train_dataset: Optional[Dataset] = None
         self.val_dataset: Optional[Dataset] = None
 
+        self.prepare_data_per_node = False
+
     def prepare_data(self):
         """Download data if needed.
         Do not use it to assign state (self.x = y).
         """
-        pass
+        return
 
-    def setup(self):
+    def setup(self, stage:str):
         """Load data
 
         This method is called by lightning with both `trainer.fit()` and `trainer.test()`, so be
         careful not to execute things like random split twice!
         """
         dataset = MIMICCXRDataset(self.hparams.mimic_cxr_dataset_file, transforms=self.transforms, tokenizer=self.tokenizer)
+        total_samples = len(dataset)
+        train_number_samples = int(self.hparams.train_val_split[0]*len(dataset))
+        self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
         self.train_dataset, self.val_dataset = random_split(
                 dataset=dataset,
                 lengths=self.hparams.train_val_split,
