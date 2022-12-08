@@ -4,12 +4,15 @@ import torch
 from transformers import AutoModel
 
 class TextEncoder(torch.nn.Module):
-    def __init__(self, name: str, proj_dim_size:int, frozen:bool=False):
+    def __init__(self, name: str, proj_dim_size:int):
         super().__init__()
         self.model = AutoModel.from_pretrained(name)
         self.l1 = torch.nn.Linear(768, 768)
         self.l2 = torch.nn.Linear(768, proj_dim_size)
-        # TODO: Implement the training time freezing logic
+        for i, p in enumerate(self.model.named_parameters()):
+            if i==101:
+                break
+            p[1].requires_grad = False
     
     def mean_pooling(self, model_output, attention_mask):
         token_embeddings = model_output[0] #First element of model_output contains all token embeddings
