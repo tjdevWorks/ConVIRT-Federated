@@ -133,3 +133,7 @@ data/*
 
 # Ignore corenlp
 *corenlp*.props
+
+*.out
+
+logs/*
