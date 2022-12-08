@@ -1,6 +1,6 @@
 _target_: src.datamodules.mimiccxr_datamodule.MIMICCXRDataModule
-batch_size: 32
-num_workers: 4
+batch_size: 128
+num_workers: 24
 pin_memory: False
 text_model_name: 'emilyalsentzer/Bio_ClinicalBERT'
 mimic_cxr_dataset_file: '/scratch/tm3647/public/mimic_image_text_df.pkl'

@@ -7,7 +7,7 @@ defaults:
   - datamodule: mimic_cxr.yaml
   - model: convirt_pretrain_model.yaml
   - callbacks: convirt_pretrain_callbacks.yaml
-  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - logger: tensorboard # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: convirt_pretrain_trainer.yaml
   - paths: convirt_pretrain_paths.yaml
   - extras: default.yaml
