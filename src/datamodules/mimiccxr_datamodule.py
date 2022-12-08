@@ -108,7 +108,7 @@ class MIMICCXRDataModule(LightningDataModule):
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
-            shuffle=True,
+            shuffle=False,
         )
 
     def teardown(self, stage: Optional[str] = None):
