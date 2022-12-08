@@ -1,0 +1,32 @@
+_target_: src.models.convirt_module.ConVIRTLitModule
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.0001
+  weight_decay: 0.000001
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.5
+  patience: 5
+
+net:
+  _target_: src.models.convirt_model.ConVIRT
+  image_model:
+    _target_: src.models.image_encoder.ImageEncoder
+    name: resnet50
+    weights: 'IMAGENET1K_V2'
+  text_model:
+    _target_: src.models.text_encoder.TextEncoder
+    name: 'emilyalsentzer/Bio_ClinicalBERT'
+    proj_dim_size: 512
+  proj_dim_size: 512
+
+criterion:
+  _target_: src.models.criterion.ConVIRTContrastiveCriterion
+  temperature: 0.1
+  lamda: 0.75
+  
