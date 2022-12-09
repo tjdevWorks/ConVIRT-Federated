@@ -60,7 +60,7 @@ class MIMICCXRDataModule(LightningDataModule):
             #transforms.GaussianBlur(G) ## Not implemented due to no info on kernel size in the paper
             #transforms.ToTensor(),
             transforms.Resize((224,224)),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            transforms.Normalize((0.398,0.398,0.398), (0.327, 0.327, 0.327))
         ])
         
         ## Transforms
