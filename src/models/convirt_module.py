@@ -56,7 +56,9 @@ class ConVIRTLitModule(LightningModule):
 
         # update and log metrics
         self.train_loss(loss)
-
+        
+        # Log Loss
+        self.log("train/loss", self.train_loss, on_step=False, on_epoch=True,prog_bar=True) 
         # we can return here dict with any tensors
         # and then read it in some callback or in `training_epoch_end()` below
         # remember to always return loss from `training_step()` or backpropagation will fail!
@@ -90,7 +92,7 @@ class ConVIRTLitModule(LightningModule):
                     "scheduler": scheduler,
                     "monitor": "val/loss",
                     "interval": "step",
-                    "frequency": 5000,
+                    "frequency": 1250,
                 },
             }
         return {"optimizer": optimizer}
