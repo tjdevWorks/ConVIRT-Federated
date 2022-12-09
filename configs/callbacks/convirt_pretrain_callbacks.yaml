@@ -3,6 +3,7 @@ defaults:
   # - early_stopping.yaml
   - model_summary.yaml
   - rich_progress_bar.yaml
+  - learning_rate_monitor.yaml
   - _self_
 
 model_checkpoint:
@@ -12,11 +13,6 @@ model_checkpoint:
   mode: "min"
   save_last: True
   auto_insert_metric_name: False
-
-# early_stopping:
-#   monitor: "val/loss"
-#   patience: 5
-#   mode: "min"
 
 model_summary:
   max_depth: -1
