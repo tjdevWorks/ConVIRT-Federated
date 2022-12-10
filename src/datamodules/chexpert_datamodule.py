@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 from transformers import AutoTokenizer
 
-from .chexpert_dataset import CheXpertDataSet
+from chexpert_dataset import CheXpertDataSet
 # config = None, transform = None, policy = 'ignore', root_dir = '/scratch/tm3647/public'
 
 class CheXpertDataModule(LightningDataModule):

@@ -21,13 +21,13 @@ class CheXpertDataSet(torch.utils.data.Dataset):
         self.config = config
         self.root_dir = root_dir
         csv_name = 'CheXpert-v1.0/train.csv' if train else 'CheXpert-v1.0/valid.csv'
-        csv_path = os.path.join(self.root_dir csv_name)
+        csv_path = os.path.join(self.root_dir, csv_name)
 
         assert os.path.exists(csv_path)
 
         if policy == 'zero': 
             self.dict = {'1.0': '1', '': '0', '0.0': '0', '-1.0': '0'}
-        else if policy == 'one':
+        elif policy == 'one':
             self.dict = {'1.0': '1', '': '0', '0.0': '0', '-1.0': '1'}
         else:
             self.dict = {'1.0': '1', '': '0', '0.0': '0'}
