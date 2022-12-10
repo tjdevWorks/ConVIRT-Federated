@@ -1,0 +1,6 @@
+_target_: src.datamodules.chexpert_datamodule.CheXpertDataModule
+batch_size: 128
+num_workers: 24
+pin_memory: False
+policy: 'ignore'
+root_dir: '/scratch/tm3647/public'

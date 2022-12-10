@@ -1,0 +1,34 @@
+# @package _global_
+
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
+defaults:
+  - _self_
+  - datamodule: chexpert.yaml
+  - model: convirt_pretrain_model.yaml
+  - callbacks: chexpert_finetune_callbacks.yaml
+  - logger: tensorboard # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - trainer: chexpert_finetune_trainer.yaml
+  - paths: chexpert_finetune_paths.yaml
+  - extras: default.yaml
+  - hydra: default.yaml
+  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  - debug: null
+
+# task name, determines output directory path
+task_name: "convirt_pretrain"
+
+# set False to skip model training
+train: True
+
+# evaluate on test set, using best model weights achieved during training
+# lightning chooses best weights based on the metric specified in checkpoint callback
+test: False
+
+# simply provide checkpoint path to resume training
+ckpt_path: null
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 42
+
+tags: ['dev']
