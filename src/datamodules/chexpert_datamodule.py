@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 from transformers import AutoTokenizer
 
-from chexpert_dataset import CheXpertDataSet
+from .chexpert_dataset import CheXpertDataSet
 # config = None, transform = None, policy = 'ignore', root_dir = '/scratch/tm3647/public'
 
 class CheXpertDataModule(LightningDataModule):
@@ -62,7 +62,8 @@ class CheXpertDataModule(LightningDataModule):
             #transforms.GaussianBlur(G) ## Not implemented due to no info on kernel size in the paper
             #transforms.ToTensor(),
             transforms.Resize((224,224)),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
 
         self.train_dataset: Optional[Dataset] = None

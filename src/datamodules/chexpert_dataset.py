@@ -5,10 +5,12 @@ import cv2
 import numpy as np
 import pyvips
 import torch
+import csv
+from PIL import Image
 from torchvision import transforms
 
 class CheXpertDataSet(torch.utils.data.Dataset):
-    def __init__(self,  train:bool , config = None, transform = None, policy = 'ignore', root_dir = '/scratch/tm3647/public'):
+    def __init__(self,  train:bool , config = None, transform = None, policy = 'ignore', root_dir = '/'):
         """
         train: bool var to determine csv path
         config: optional
@@ -23,14 +25,14 @@ class CheXpertDataSet(torch.utils.data.Dataset):
         csv_name = 'CheXpert-v1.0/train.csv' if train else 'CheXpert-v1.0/valid.csv'
         csv_path = os.path.join(self.root_dir, csv_name)
 
-        assert os.path.exists(csv_path)
+        assert os.path.exists(csv_path), csv_path
 
         if policy == 'zero': 
-            self.dict = {'1.0': '1', '': '0', '0.0': '0', '-1.0': '0'}
+            self.dict = {'1.0': 1, '': 0, '0.0': 0, -1.0: 0}
         elif policy == 'one':
-            self.dict = {'1.0': '1', '': '0', '0.0': '0', '-1.0': '1'}
+            self.dict = {'1.0': 1, '': 0, '0.0': 0, -1.0: 1}
         else:
-            self.dict = {'1.0': '1', '': '0', '0.0': '0'}
+            self.dict = {'1.0': 1, '': 0, '0.0': 0}
 
         image_paths = []
         labels = []
