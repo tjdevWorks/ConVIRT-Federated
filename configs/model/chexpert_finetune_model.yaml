@@ -13,7 +13,7 @@ scheduler:
   factor: 0.5
   patience: 5
 
-checkpoint_path: ${paths.output_dir}/checkpoints/
+checkpoint_path: '/scratch/tm3647/public/convirt_epoch_025.ckpt'
 
 criterion:
   _target_: torch.nn.modules.loss.BCELoss

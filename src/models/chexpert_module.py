@@ -3,9 +3,11 @@ from typing import Any, List
 import torch
 from pytorch_lightning import LightningModule
 from torchmetrics import MeanMetric
-from .convirt_model.py import ConVIRT
+from .convirt_module import ConVIRTLitModule
+from .image_encoder import ImageEncoder
+from .chexpert_model import CheXpert
 
-class CheXpertModule(LightningModule):
+class CheXpertLitModule(LightningModule):
     """Example of LightningModule for MNIST classification.
 
     A LightningModule organizes your PyTorch code into 6 sections:
@@ -23,6 +25,7 @@ class CheXpertModule(LightningModule):
     def __init__(
         self,
         checkpoint_path:str,
+        # net: torch.nn.Module,
         optimizer:torch.optim.Optimizer,
         scheduler:torch.optim.lr_scheduler,
         criterion:torch.nn.modules.loss,
@@ -32,10 +35,10 @@ class CheXpertModule(LightningModule):
 
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
-        self.save_hyperparameters(logger=False, ignore=["net", "criterion"])
+        self.save_hyperparameters(logger=False, ignore=["criterion"])
         self.freeze_backbone = freeze_backbone
 
-        image_model = ConVIRT.load_from_checkpoint(checkpoint_path).image_model
+        image_model = ImageEncoder('resnet50')#ConVIRTLitModule.load_from_checkpoint(checkpoint_path).net.image_model
         self.model = CheXpert(image_model, freeze_backbone)
 
         # loss function

@@ -5,7 +5,7 @@
 defaults:
   - _self_
   - datamodule: chexpert.yaml
-  - model: convirt_pretrain_model.yaml
+  - model: chexpert_finetune_model.yaml
   - callbacks: chexpert_finetune_callbacks.yaml
   - logger: tensorboard # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: chexpert_finetune_trainer.yaml
@@ -16,7 +16,7 @@ defaults:
   - debug: null
 
 # task name, determines output directory path
-task_name: "convirt_pretrain"
+task_name: "chexpert_finetune"
 
 # set False to skip model training
 train: True

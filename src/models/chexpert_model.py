@@ -5,11 +5,11 @@ class CheXpert(torch.nn.Module):
         super(CheXpert, self).__init__()
 
         self.freeze_backbone = freeze_backbone
-        old_modules = [x for x in image_model.modules()]
-        backbone_out_features = old_modules[-1].in_features
-        self.backbone = nn.Sequential(*old_modules[1:-1])
-        self.decoder = nn.Sequential(nn.Linear(backbone_out_features, 14),
-                                            nn.Sigmoid(),
+        # old_modules = [x for x in image_model.modules()]
+        # backbone_out_features = old_modules[-1].out_features
+        self.backbone = image_model
+        self.decoder = torch.nn.Sequential(torch.nn.Linear(2048, 14),
+                                            torch.nn.Sigmoid(),
                                             )
     
     def forward(self, input_batch):
