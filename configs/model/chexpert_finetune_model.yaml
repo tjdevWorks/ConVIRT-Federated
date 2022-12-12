@@ -11,13 +11,17 @@ scheduler:
   _partial_: true
   mode: min
   factor: 0.5
-  patience: 5
-
-checkpoint_path: '/scratch/tm3647/public/convirt_epoch_025.ckpt'
+  patience: 3
 
 criterion:
   _target_: torch.nn.modules.loss.BCELoss
   reduction: 'mean'
 
-freeze_backbone: True
+model:
+  _target_: src.models.chexpert_model.CheXpert
+  image_model:
+    _target_: src.models.image_encoder.ImageEncoder
+    name: resnet50
+  freeze_backbone: True
+  checkpoint_path: '/scratch/tm3647/public/image_model_weight.pth'
   
