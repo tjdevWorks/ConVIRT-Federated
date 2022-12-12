@@ -74,8 +74,7 @@ class CheXpertDataSet(torch.utils.data.Dataset):
         # Read Image
         image = pyvips.Image.new_from_file(image_path, access="sequential")
         mem_img = image.write_to_memory()
-        image = np.frombuffer(mem_img, dtype=np.uint8).reshape(image.height, image.width)
-        image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_GRAY2RGB))
+        image = np.frombuffer(mem_img, dtype=np.uint8).reshape(image.height, image.width, 3)
         
         # Apply Transform
         if self.transform is not None:

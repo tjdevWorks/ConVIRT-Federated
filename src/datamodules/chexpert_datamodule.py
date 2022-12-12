@@ -102,6 +102,7 @@ class CheXpertDataModule(LightningDataModule):
                                 transform = self.transform, 
                                 policy = self.policy,
                                 root_dir = self.root_dir,
+                                test_set=True
                             )
 
     def train_dataloader(self):
