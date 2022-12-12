@@ -24,7 +24,7 @@ class MIMICCXRDataset(torch.utils.data.Dataset):
         return self.df.shape[0]
     
     def __getitem__(self, idx):
-        record = self.df.iloc[idx]
+        record = self.df.iloc[int(idx)]
         
         image = pyvips.Image.new_from_file(record['image_fname'], access="sequential")
         mem_img = image.write_to_memory()

@@ -6,8 +6,8 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 from transformers import AutoTokenizer
 
-from .chexpert_dataset import CheXpertDataSet
-# config = None, transform = None, policy = 'ignore', root_dir = '/scratch/tm3647/public'
+from .chexpert_dataset import CheXpertDataSet, SquarePad
+
 
 class CheXpertDataModule(LightningDataModule):
     """Example of LightningDataModule for MNIST dataset.
@@ -39,7 +39,10 @@ class CheXpertDataModule(LightningDataModule):
 
     def __init__(
         self,
-        root_dir = '/scratch/tm3647/public',
+        train_fname: str,
+        val_fname: str,
+        test_fname: str,
+        root_dir = '/',
         policy = 'ignore',
         batch_size: int = 64,
         num_workers: int = 0,
@@ -54,23 +57,23 @@ class CheXpertDataModule(LightningDataModule):
         self.save_hyperparameters(logger=False)
 
         ## Image transformations
-        ## Kept it same as MIMIC: not sure if correct
         self.transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, ratio=[0.6, 1.0]),
-            transforms.RandomAffine(degrees=[-20,20], translate=(0.1,0.1), scale=(0.95, 1.05)),
-            transforms.ColorJitter(brightness=(0.6, 1.4), contrast=(0.6, 1.4)),
-            #transforms.GaussianBlur(G) ## Not implemented due to no info on kernel size in the paper
-            #transforms.ToTensor(),
-            transforms.Resize((224,224)),
+            #SquarePad(),
+            #transforms.Resize((224,224)),
             transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            transforms.Normalize((0.398,0.398,0.398), (0.327, 0.327, 0.327)),
         ])
 
         self.train_dataset: Optional[Dataset] = None
         self.val_dataset: Optional[Dataset] = None
+        self.test_dataset: Optional[Dataset] = None
         self.prepare_data_per_node = False
         self.root_dir = root_dir
         self.policy = policy
+        
+        self.train_fname = train_fname
+        self.test_fname = test_fname
+        self.val_fname = val_fname
 
     def prepare_data(self):
         """Download data if needed.
@@ -83,14 +86,19 @@ class CheXpertDataModule(LightningDataModule):
         This method is called by lightning with both `trainer.fit()` and `trainer.test()`, so be
         careful not to execute things like random split twice!
         """
-        self.train_dataset = CheXpertDataSet(train = True, 
-                                config = None,
+        self.train_dataset = CheXpertDataSet(csv_name=self.train_fname,
                                 transform = self.transform, 
                                 policy = self.policy,
                                 root_dir = self.root_dir,
                             )
-        self.val_dataset = CheXpertDataSet(train = False, 
-                                config = None,
+
+        self.val_dataset = CheXpertDataSet(csv_name=self.val_fname,
+                                transform = self.transform, 
+                                policy = self.policy,
+                                root_dir = self.root_dir,
+                            )
+
+        self.test_dataset = CheXpertDataSet(csv_name=self.test_fname,
                                 transform = self.transform, 
                                 policy = self.policy,
                                 root_dir = self.root_dir,
@@ -114,6 +122,15 @@ class CheXpertDataModule(LightningDataModule):
             shuffle = False,
         )
 
+    def test_dataloader(self):
+        return DataLoader(
+            dataset = self.test_dataset,
+            batch_size = self.hparams.batch_size,
+            num_workers = self.hparams.num_workers,
+            pin_memory = self.hparams.pin_memory,
+            shuffle = False,
+        )
+
     def teardown(self, stage: Optional[str] = None):
         """Clean up after fit or test."""
         pass
@@ -126,13 +143,6 @@ class CheXpertDataModule(LightningDataModule):
         """Things to do when loading checkpoint."""
         pass
     
-    def collate_and_tokenize(self, batch):
-        input_data = {}
-        
-        images = torch.cat(list(map(lambda x: torch.unsqueeze(x['image'], 0), batch)))        
-        input_data['images'] = images
-
-        return input_data
 
 if __name__ == "__main__":
     import hydra

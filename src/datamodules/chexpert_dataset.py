@@ -9,20 +9,26 @@ import csv
 from PIL import Image
 from torchvision import transforms
 
+class SquarePad:
+    def __call__(self, image):
+        max_wh = max(image.size)
+        p_left, p_top = [(max_wh - s) // 2 for s in image.size]
+        p_right, p_bottom = [max_wh - (s+pad) for s, pad in zip(image.size, [p_left, p_top])]
+        padding = (p_left, p_top, p_right, p_bottom)
+        return transforms.Pad(padding, 0, 'constant')(image)
+
 class CheXpertDataSet(torch.utils.data.Dataset):
-    def __init__(self,  train:bool , config = None, transform = None, policy = 'ignore', root_dir = '/'):
+    def __init__(self,  csv_name:str, transform = None, policy = 'ignore', root_dir = '/', test_set=False):
         """
-        train: bool var to determine csv path
-        config: optional
+        csv_name: path to csv file
         transform: optional transform to be applied on a sample
         policy: to handle '-1' values in labelled data
         root_dir: directory containing the CheXpert dataset
         """
         super(CheXpertDataSet, self).__init__()
 
-        self.config = config
         self.root_dir = root_dir
-        csv_name = 'CheXpert-v1.0/train.csv' if train else 'CheXpert-v1.0/valid.csv'
+        csv_name = csv_name
         csv_path = os.path.join(self.root_dir, csv_name)
 
         assert os.path.exists(csv_path), csv_path
@@ -42,7 +48,7 @@ class CheXpertDataSet(torch.utils.data.Dataset):
             next(rows, None)
             for row in rows:
                 image_path = row[0]
-                label = row[5:]
+                label = row[5:] if not test_set else row[1:]
                 ignore_row = False
                 for i in range(14):
                     if policy == 'ignore' and label[i] == '-1.0':
@@ -64,9 +70,16 @@ class CheXpertDataSet(torch.utils.data.Dataset):
         label = self.labels[index]
         image_path = self.image_paths[index]
         image_path = os.path.join(self.root_dir, image_path)
-        image = Image.open(image_path).convert('RGB')
+        
+        # Read Image
+        image = pyvips.Image.new_from_file(image_path, access="sequential")
+        mem_img = image.write_to_memory()
+        image = np.frombuffer(mem_img, dtype=np.uint8).reshape(image.height, image.width)
+        image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_GRAY2RGB))
+        
+        # Apply Transform
         if self.transform is not None:
-            image = self.transform(image)   
+            image = self.transform(image)
         return {'image': image, 'label': torch.FloatTensor(label)}
 
     def __len__(self):
