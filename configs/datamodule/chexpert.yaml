@@ -1,9 +1,9 @@
 _target_: src.datamodules.chexpert_datamodule.CheXpertDataModule
-batch_size: 128
+batch_size: 256
 num_workers: 24
 pin_memory: True
 policy: 'ignore'
 root_dir: '/'
 train_fname: 'CheXpert-v1.0/train_new.csv'
-val_fname: 'CheXpert-v1.0/val_new.csv'
+val_fname: 'CheXpert-v1.0/valid_new.csv'
 test_fname: 'CheXpert-v1.0/test_new.csv'
