@@ -8,7 +8,6 @@ import numpy as np
 
 from .chexpert_dataset import CheXpertDataSet, SquarePad
 
-
 class CheXpertDataModule(LightningDataModule):
     """Example of LightningDataModule for MNIST dataset.
 
@@ -47,7 +46,9 @@ class CheXpertDataModule(LightningDataModule):
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
-        train_val_split: Tuple[float, float] = [0.95,0.05]
+        train_val_split: Tuple[float, float] = [0.95,0.05],
+        normalize_mean_values: Tuple[float, float, float] = [0.485, 0.456, 0.406],
+        normalize_std_values: Tuple[float, float, float] = [0.229, 0.224, 0.225],
     ):
         super(CheXpertDataModule,).__init__()
 
@@ -60,7 +61,7 @@ class CheXpertDataModule(LightningDataModule):
             #SquarePad(),
             #transforms.Resize((224,224)),
             transforms.ToTensor(),
-            transforms.Normalize((0.398,0.398,0.398), (0.327, 0.327, 0.327)),
+            transforms.Normalize(normalize_mean_values, normalize_std_values)
         ])
 
         self.train_dataset: Optional[Dataset] = None
@@ -93,6 +94,10 @@ class CheXpertDataModule(LightningDataModule):
         total_samples = len(self.train_dataset)
         train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
         self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
+
+        ## Uncomment Only while debugging
+        # self.train_dataset = torch.utils.data.Subset(self.train_dataset, np.arange(0, 100))
+        # self.hparams.train_val_split = [90, 10]
 
         self.train_dataset, self.val_dataset = random_split(
                 dataset=self.train_dataset,

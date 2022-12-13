@@ -1,15 +1,13 @@
 import torch
 
 class CheXpert(torch.nn.Module):
-    def __init__(self, image_model:torch.nn.Module, checkpoint_path:str, freeze_backbone=True):
+    def __init__(self, image_model:torch.nn.Module, checkpoint_path:str='', freeze_backbone=True):
         super(CheXpert, self).__init__()
-
         self.freeze_backbone = freeze_backbone
-        # old_modules = [x for x in image_model.modules()]
-        # backbone_out_features = old_modules[-1].out_features
         self.backbone = image_model
-        # Reloading Weights
-        self.backbone.reload_model_weights(checkpoint_path)
+        if len(checkpoint_path)!=0:
+            ## Reloading Weights
+            self.backbone.reload_model_weights(checkpoint_path)
         self.decoder = torch.nn.Sequential( torch.nn.Dropout(0.2),
                                             torch.nn.Linear(2048, 14),
                                             torch.nn.Sigmoid(),
