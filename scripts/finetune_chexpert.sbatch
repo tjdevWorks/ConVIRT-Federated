@@ -2,10 +2,10 @@
 
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=24
-#SBATCH --time=1-23:30:00
+#SBATCH --time=3:00:00
 #SBATCH --mem=64GB
 #SBATCH --gres=gpu:a100:1
-#SBATCH --job-name=chexpert_finetune
+#SBATCH --job-name=chexpert_finetune_policy_zeros
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tm3647@nyu.edu
 
