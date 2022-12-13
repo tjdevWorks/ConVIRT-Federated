@@ -18,25 +18,22 @@ class SquarePad:
         return transforms.Pad(padding, 0, 'constant')(image)
 
 class CheXpertDataSet(torch.utils.data.Dataset):
-    def __init__(self,  csv_name:str, transform = None, policy = 'ignore', root_dir = '/', test_set=False):
+    def __init__(self,  csv_name:str, transform = None, policy = 'ignore', test_set=False):
         """
         csv_name: path to csv file
         transform: optional transform to be applied on a sample
         policy: to handle '-1' values in labelled data
-        root_dir: directory containing the CheXpert dataset
         """
         super(CheXpertDataSet, self).__init__()
 
-        self.root_dir = root_dir
-        csv_name = csv_name
-        csv_path = os.path.join(self.root_dir, csv_name)
-
+        csv_path = csv_name
+        
         assert os.path.exists(csv_path), csv_path
 
         if policy == 'zero': 
-            self.dict = {'1.0': 1, '': 0, '0.0': 0, -1.0: 0}
+            self.dict = {'1.0': 1, '': 0, '0.0': 0, "-1.0": 0}
         elif policy == 'one':
-            self.dict = {'1.0': 1, '': 0, '0.0': 0, -1.0: 1}
+            self.dict = {'1.0': 1, '': 0, '0.0': 0, "-1.0": 1}
         else:
             self.dict = {'1.0': 1, '': 0, '0.0': 0}
 
@@ -69,7 +66,6 @@ class CheXpertDataSet(torch.utils.data.Dataset):
         """Take the index of item and returns the image and its labels"""
         label = self.labels[index]
         image_path = self.image_paths[index]
-        image_path = os.path.join(self.root_dir, image_path)
         
         # Read Image
         image = pyvips.Image.new_from_file(image_path, access="sequential")

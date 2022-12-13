@@ -4,7 +4,7 @@ import torch
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
-from transformers import AutoTokenizer
+import numpy as np
 
 from .chexpert_dataset import CheXpertDataSet, SquarePad
 
@@ -47,8 +47,7 @@ class CheXpertDataModule(LightningDataModule):
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
-        # train_val_split: Tuple[float, float] = [0.95, 0.05],
-        #cfg: dict = {},
+        train_val_split: Tuple[float, float] = [0.95,0.05]
     ):
         super(CheXpertDataModule,).__init__()
 
@@ -89,20 +88,21 @@ class CheXpertDataModule(LightningDataModule):
         self.train_dataset = CheXpertDataSet(csv_name=self.train_fname,
                                 transform = self.transform, 
                                 policy = self.policy,
-                                root_dir = self.root_dir,
                             )
 
-        self.val_dataset = CheXpertDataSet(csv_name=self.val_fname,
-                                transform = self.transform, 
-                                policy = self.policy,
-                                root_dir = self.root_dir,
-                            )
+        total_samples = len(self.train_dataset)
+        train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
+        self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
 
-        self.test_dataset = CheXpertDataSet(csv_name=self.test_fname,
+        self.train_dataset, self.val_dataset = random_split(
+                dataset=self.train_dataset,
+                lengths=self.hparams.train_val_split,
+                generator=torch.Generator().manual_seed(42),
+        )
+
+        self.test_dataset = CheXpertDataSet(csv_name=self.val_fname,
                                 transform = self.transform, 
                                 policy = self.policy,
-                                root_dir = self.root_dir,
-                                test_set=True
                             )
 
     def train_dataloader(self):
