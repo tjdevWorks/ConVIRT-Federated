@@ -41,7 +41,6 @@ class CheXpertDataModule(LightningDataModule):
         train_fname: str,
         val_fname: str,
         test_fname: str,
-        root_dir = '/',
         policy = 'ignore',
         batch_size: int = 64,
         num_workers: int = 0,
@@ -68,7 +67,6 @@ class CheXpertDataModule(LightningDataModule):
         self.val_dataset: Optional[Dataset] = None
         self.test_dataset: Optional[Dataset] = None
         self.prepare_data_per_node = False
-        self.root_dir = root_dir
         self.policy = policy
         
         self.train_fname = train_fname

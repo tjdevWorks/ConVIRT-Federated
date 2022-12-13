@@ -3,10 +3,9 @@ batch_size: 256
 num_workers: 24
 pin_memory: True
 policy: 'one'
-root_dir: '/'
 train_fname: '/scratch/tm3647/public/MLH/chexpert_dataset/train.csv'
 val_fname: '/scratch/tm3647/public/MLH/chexpert_dataset/valid.csv'
 test_fname: ''
 train_val_split: [0.9775,0.0225]
-normalize_mean_values: [0.485, 0.456, 0.406] #Mimic-cxr
-normalize_std_values: [0.229, 0.224, 0.225] #Mimic-cxr
+normalize_mean_values: [0.398,0.398,0.398] #Mimic-cxr
+normalize_std_values: [0.327, 0.327, 0.327] #Mimic-cxr
