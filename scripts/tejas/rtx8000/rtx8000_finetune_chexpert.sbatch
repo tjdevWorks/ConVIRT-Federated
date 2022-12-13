@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=24
-#SBATCH --time=3:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --time=12:00:00
 #SBATCH --mem=64GB
-#SBATCH --gres=gpu:a100:1
-#SBATCH --job-name=chexpert_finetune_policy_zeros
+#SBATCH --gres=gpu:rtx8000:1
+#SBATCH --job-name=chexpert_finetune
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tm3647@nyu.edu
 
