@@ -1,0 +1,24 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - datamodule: chexpert.yaml
+  - model: chexpert_finetune_model.yaml
+  - callbacks: chexpert_finetune_callbacks.yaml
+  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - trainer: chexpert_finetune_trainer.yaml
+  - paths: chexpert_finetune_paths.yaml
+  - extras: default.yaml
+  - hydra: default.yaml
+  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  - debug: null
+
+trainer:
+  accelerator: gpu
+
+task_name: "eval"
+
+tags: ["dev"]
+
+# passing checkpoint path is necessary for evaluation
+ckpt_path: "/scratch/tm3647/MLH/ConVIRT-private/logs/chexpert_finetune/runs/2022-12-12_12-59-52/checkpoints/epoch_013.ckpt"
