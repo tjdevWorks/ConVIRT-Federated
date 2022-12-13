@@ -7,3 +7,6 @@ defaults:
   # - neptune.yaml
   - tensorboard.yaml
   #- wandb.yaml
+
+tensorboard:
+  log_graph: True
