@@ -42,6 +42,16 @@ class CheXpertLitModule(LightningModule):
         self.train_auc = AUROC(task="multilabel", num_labels=14, average="macro")
         self.val_auc = AUROC(task="multilabel", num_labels=14, average="macro")
         self.test_auc = AUROC(task="multilabel", num_labels=14, average="macro")
+
+        self.train_mean_auc_score = MeanMetric()
+        self.val_mean_auc_score = MeanMetric()
+        self.test_mean_auc_score = MeanMetric()
+
+        self.train_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
+        self.val_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
+        self.test_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
+
+        self.classes_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
         
     def forward(self, x: torch.Tensor):
         return self.model(x)
@@ -56,27 +66,47 @@ class CheXpertLitModule(LightningModule):
 
         # update and log metrics
         self.train_loss(loss)
-        self.train_auc(pred, batch['label'])
-        self.log("train/loss", self.train_loss, on_step=False, on_epoch=True,prog_bar=True)
-        self.log("train/aucroc", self.train_auc, on_step=False, on_epoch=True,prog_bar=True)
+        auc_score = self.train_auc(pred, batch['label'])
+        self.train_mean_auc_score.update(auc_score)
+        auc_scores_per_class = self.train_auc_per_class(pred, batch['label'])
+
+        self.log("train/loss", self.train_loss, on_step=True, on_epoch=False,prog_bar=True)
+        
         # we can return here dict with any tensors
         # and then read it in some callback or in `training_epoch_end()` below
         # remember to always return loss from `training_step()` or backpropagation will fail!
-        return {"loss": loss}
+        return {"loss": loss, "auc_per_class": auc_scores_per_class}
 
     def training_epoch_end(self, outputs: List[Any]):
         # `outputs` is a list of dicts returned from `training_step()`
-        pass
+        auc_scores_batch_class = torch.stack(list(map(lambda x: x['auc_per_class'], outputs)))
+        auc_scores_mean_class = torch.mean(auc_scores_batch_class, dim=0)
+        for i, cls_name in enumerate(self.classes_names):
+            self.log(f"train/{cls_name}/aucroc", auc_scores_mean_class[i],prog_bar=True)
+
+        self.log("train/mean_aucroc", self.train_mean_auc_score.compute(), prog_bar=True)
+        self.log("train/mean_loss", self.train_loss.compute(), prog_bar=True)
 
     def validation_step(self, batch: Any, batch_idx: int):
         pred, loss = self.step(batch)
         
         self.val_loss(loss)
-        self.val_auc(pred, batch['label'])
+        auc_score = self.val_auc(pred, batch['label'])
+        self.val_mean_auc_score.update(auc_score)
+        auc_scores_per_class = self.val_auc_per_class(pred, batch['label'])
+
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/aucroc", self.val_auc, on_step=False, on_epoch=True, prog_bar=True)
         
-        return {"loss": loss}
+        return {"loss": loss, "auc_per_class": auc_scores_per_class}
+    
+    def validation_epoch_end(self, outputs: List[Any]):
+        auc_scores_batch_class = torch.stack(list(map(lambda x: x['auc_per_class'], outputs)))
+        auc_scores_mean_class = torch.mean(auc_scores_batch_class, dim=0)
+        for i, cls_name in enumerate(self.classes_names):
+            self.log(f"val/{cls_name}/aucroc", auc_scores_mean_class[i],prog_bar=True)
+
+        self.log("val/mean_aucroc", self.val_mean_auc_score.compute(),prog_bar=True)
+        self.log("val/mean_loss", self.val_loss.compute(), prog_bar=True)
     
     def test_step(self, batch: Any, batch_idx: int):
         pred, loss = self.step(batch)
@@ -84,7 +114,7 @@ class CheXpertLitModule(LightningModule):
         self.test_loss(loss)
         self.test_auc(pred, batch['label'])
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/aucroc", self.test_auc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test/aucroc", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
         
         return {"loss": loss}
 
