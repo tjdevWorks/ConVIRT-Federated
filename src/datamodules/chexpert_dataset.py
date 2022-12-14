@@ -18,7 +18,7 @@ class SquarePad:
         return transforms.Pad(padding, 0, 'constant')(image)
 
 class CheXpertDataSet(torch.utils.data.Dataset):
-    def __init__(self,  csv_name:str, transform = None, policy = 'ignore', test_set=False):
+    def __init__(self,  csv_name:str, transform = None, policy = 'one', test_set=False):
         """
         csv_name: path to csv file
         transform: optional transform to be applied on a sample
@@ -45,18 +45,18 @@ class CheXpertDataSet(torch.utils.data.Dataset):
             next(rows, None)
             for row in rows:
                 image_path = row[0]
-                label = row[5:] if not test_set else row[1:]
+                label_14 = row[5:] if not test_set else row[1:]
+                label_5 = []
                 ignore_row = False
-                for i in range(14):
-                    if policy == 'ignore' and label[i] == '-1.0':
+                for i in [2, 5, 6, 8, 10]:
+                    if policy == 'ignore' and label_14[i] == '-1.0':
                         ignore_row = True
                         break 
-                    label[i] = self.dict[label[i]]
-
+                    label_5.append(self.dict[label_14[i]])
                 if policy == 'ignore' and ignore_row == True:
                     continue 
                 image_paths.append(image_path)
-                labels.append(label)
+                labels.append(label_5)
 
         self.image_paths = image_paths
         self.labels = labels

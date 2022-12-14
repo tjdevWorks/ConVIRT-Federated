@@ -9,7 +9,7 @@ class CheXpert(torch.nn.Module):
             ## Reloading Weights
             self.backbone.reload_model_weights(checkpoint_path)
         self.decoder = torch.nn.Sequential( torch.nn.Dropout(0.2),
-                                            torch.nn.Linear(2048, 14),
+                                            torch.nn.Linear(2048, 5),
                                             torch.nn.Sigmoid(),
                                             )
 

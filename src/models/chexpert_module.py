@@ -40,15 +40,15 @@ class CheXpertLitModule(LightningModule):
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
         
-        self.train_auc = AUROC(task="multilabel", num_labels=14, average="macro")
-        self.val_auc = AUROC(task="multilabel", num_labels=14, average="macro")
-        self.test_auc = AUROC(task="multilabel", num_labels=14, average="macro")
+        self.train_auc = AUROC(task="multilabel", num_labels=5, average="macro")
+        self.val_auc = AUROC(task="multilabel", num_labels=5, average="macro")
+        self.test_auc = AUROC(task="multilabel", num_labels=5, average="macro")
 
-        self.train_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
-        self.val_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
-        self.test_auc_per_class = AUROC(task="multilabel", num_labels=14, average=None)
+        self.train_auc_per_class = AUROC(task="multilabel", num_labels=5, average=None)
+        self.val_auc_per_class = AUROC(task="multilabel", num_labels=5, average=None)
+        self.test_auc_per_class = AUROC(task="multilabel", num_labels=5, average=None)
 
-        self.classes_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
+        self.classes_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion']
 
         self.example_input_array = torch.rand((1,3,224,224))
         
