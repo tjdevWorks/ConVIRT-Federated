@@ -1,0 +1,8 @@
+key: 'volume'
+train_path: "/CheXpert-v1.0/train_new.csv" 
+policy: 'one'
+mode: 'uniform' #can be ['uniform', 'dirchlet']
+num_clients: 10 
+scale: 1 #Scale for Dirchlet distribution
+
+
