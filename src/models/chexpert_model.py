@@ -8,8 +8,12 @@ class CheXpert(torch.nn.Module):
         if len(checkpoint_path)!=0:
             ## Reloading Weights
             self.backbone.reload_model_weights(checkpoint_path)
-        self.decoder = torch.nn.Sequential( torch.nn.Dropout(0.2),
-                                            torch.nn.Linear(2048, 5),
+        self.decoder = torch.nn.Sequential( torch.nn.Dropout(0.5),
+                                            torch.nn.Linear(2048, 512),
+                                            torch.nn.ReLU(),
+                                            torch.nn.BatchNorm1d(512),
+                                            torch.nn.Dropout(0.5),
+                                            torch.nn.Linear(512, 5),
                                             torch.nn.Sigmoid(),
                                             )
 
