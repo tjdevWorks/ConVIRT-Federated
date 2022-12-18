@@ -170,18 +170,26 @@ def get_evaluate_fn(
         datamodule = hydra.utils.instantiate(cfg.datamodule)
         datamodule.setup("test")
 
-        #cfg['callbacks']['model_checkpoint']['dirpath'] += '/checkpoints/' 
-        #callbacks: List[Callback] = utils.instantiate_callbacks(cfg.callbacks)
-        #os.makedirs(callbacks[0].dirpath, exist_ok=True)
-
         logger: List[LightningLoggerBase] = utils.instantiate_loggers(cfg.get("logger"))
 
-        trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger)#, callbacks=callbacks)
+        trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger)
 
         ## Trainer Test Function
         trainer.test(model=model, datamodule=datamodule)
+
+        ## Save Global Model
+        
+        model_dir = cfg.paths.output_dir + '/global_model_checkpoints/'
+        os.makedirs(model_dir, exist_ok=True)
+        model_path = model_dir + f"round_{server_round}_{round(trainer.callback_metrics['test/aucroc'].item(), 4)}.pt"
+        torch.save({
+                    'epoch': server_round,
+                    'model_state_dict': model.state_dict(),
+                    'test_loss': trainer.callback_metrics['test/loss'],
+                    'test_aucroc': trainer.callback_metrics['test/aucroc']
+                    }, model_path)
         
         # return statistics
-        return None, trainer.callback_metrics
+        return trainer.callback_metrics['test/loss'], trainer.callback_metrics
 
     return evaluate
