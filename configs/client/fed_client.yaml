@@ -18,6 +18,8 @@ datamodule:
   num_workers: 1
   train_val_split: [0.9,0.1]
 
+datamodule_debug_mode: True
+
 # task name, determines output directory path
 #task_name: "fed_"
 

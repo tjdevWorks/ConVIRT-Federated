@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, List
 
 import torch
 from pytorch_lightning import LightningDataModule
@@ -79,58 +79,64 @@ class CheXpertDataModule(LightningDataModule):
         """
         return
 
-    def setup(self, stage:str):
+    def setup(self, stage:str, indices: List = [], debug_mode:bool=False):
         """Load data
         This method is called by lightning with both `trainer.fit()` and `trainer.test()`, so be
         careful not to execute things like random split twice!
         """
-        self.train_dataset = CheXpertDataSet(csv_name=self.train_fname,
+        if stage=="fit":
+            self.train_dataset = CheXpertDataSet(csv_name=self.train_fname,
                                 transform = self.transform, 
                                 policy = self.policy,
                             )
+            ## Subset if indicies are there
+            if len(indices)!=0:
+                self.train_dataset = torch.utils.data.Subset(self.train_dataset, indices)
 
-        total_samples = len(self.train_dataset)
-        train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
-        self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
+            total_samples = len(self.train_dataset)
+            train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
+            self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
 
-        ## Uncomment Only while debugging
-        # self.train_dataset = torch.utils.data.Subset(self.train_dataset, np.arange(0, 100))
-        # self.hparams.train_val_split = [90, 10]
+            # ## Uncomment Only while debugging
+            if debug_mode:
+                self.train_dataset = torch.utils.data.Subset(self.train_dataset, np.arange(0, 100))
+                self.hparams.train_val_split = [90, 10]
 
-        self.train_dataset, self.val_dataset = random_split(
-                dataset=self.train_dataset,
-                lengths=self.hparams.train_val_split,
-                generator=torch.Generator().manual_seed(42),
-        )
-
-        self.test_dataset = CheXpertDataSet(csv_name=self.val_fname,
+            self.train_dataset, self.val_dataset = random_split(
+                    dataset=self.train_dataset,
+                    lengths=self.hparams.train_val_split,
+                    generator=torch.Generator().manual_seed(42),
+            )
+            print(f"Training Dataset Size: {len(self.train_dataset)}")
+            print(f"Validation Dataset Size: {len(self.val_dataset)}")
+        elif stage=="test":
+            self.test_dataset = CheXpertDataSet(csv_name=self.val_fname,
                                 transform = self.transform, 
-                                policy = self.policy,
-                            )
+                                policy = self.policy)
 
-    def train_dataloader(self):
+    def train_dataloader(self, num_workers=None):
         return DataLoader(
             dataset = self.train_dataset,
             batch_size = self.hparams.batch_size,
-            num_workers = self.hparams.num_workers,
+            num_workers = self.hparams.num_workers if num_workers is None else num_workers,
             pin_memory = self.hparams.pin_memory,
             shuffle = True,
         )
     
-    def val_dataloader(self):
+    def val_dataloader(self, num_workers=None):
         return DataLoader(
             dataset = self.val_dataset,
             batch_size = self.hparams.batch_size,
-            num_workers = self.hparams.num_workers,
+            num_workers = self.hparams.num_workers if num_workers is None else num_workers,
             pin_memory = self.hparams.pin_memory,
             shuffle = False,
         )
 
-    def test_dataloader(self):
+    def test_dataloader(self, num_workers=None):
         return DataLoader(
             dataset = self.test_dataset,
             batch_size = self.hparams.batch_size,
-            num_workers = self.hparams.num_workers,
+            num_workers = self.hparams.num_workers if num_workers is None else num_workers,
             pin_memory = self.hparams.pin_memory,
             shuffle = False,
         )
