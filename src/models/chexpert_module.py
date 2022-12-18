@@ -50,7 +50,7 @@ class CheXpertLitModule(LightningModule):
 
         self.classes_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion']
 
-        self.example_input_array = torch.rand((1,3,224,224))
+        self.example_input_array = torch.rand((2,3,224,224))
         
     def forward(self, x: torch.Tensor):
         return self.model(x)
