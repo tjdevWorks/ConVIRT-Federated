@@ -93,18 +93,18 @@ class CheXpertDataModule(LightningDataModule):
             if len(indices)!=0:
                 self.train_dataset = torch.utils.data.Subset(self.train_dataset, indices)
 
-            total_samples = len(self.train_dataset)
-            train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
-            self.hparams.train_val_split = [train_number_samples, total_samples-train_number_samples]
+        total_samples = len(self.train_dataset)
+        train_number_samples = int(self.hparams.train_val_split[0]*len(self.train_dataset))
+        train_val_split_count = [train_number_samples, total_samples-train_number_samples]
 
-            # ## Uncomment Only while debugging
-            if debug_mode:
-                self.train_dataset = torch.utils.data.Subset(self.train_dataset, np.arange(0, 100))
-                self.hparams.train_val_split = [90, 10]
+        # ## Uncomment Only while debugging
+        if debug_mode:
+            self.train_dataset = torch.utils.data.Subset(self.train_dataset, np.arange(0, 100))
+            self.hparams.train_val_split = [90, 10]
 
             self.train_dataset, self.val_dataset = random_split(
                     dataset=self.train_dataset,
-                    lengths=self.hparams.train_val_split,
+                    lengths=train_val_split_count,
                     generator=torch.Generator().manual_seed(42),
             )
             print(f"Training Dataset Size: {len(self.train_dataset)}")
