@@ -1,0 +1,3 @@
+_target_: fl.server.ServerConfig
+
+num_rounds: 10

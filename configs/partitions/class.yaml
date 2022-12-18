@@ -3,7 +3,7 @@ train_path: '/CheXpert-v1.0/train_new.csv'
 policy: 'one'
 modeparams:
   labels: ['Atelectasis', 'Cardiomegaly', 'Consolidation', 'Edema', 'Pleural Effusion']
-mode: 'single_client_per_class',
+mode: 'single_client_per_class'
 num_clients: 3
 exclusive: False 
 equal_num_samples: False 

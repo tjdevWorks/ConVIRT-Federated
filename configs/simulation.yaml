@@ -1,0 +1,47 @@
+defaults:
+  - client: fed_client
+  - strategy: fed_avg
+  - server: server_config
+  - extras: default.yaml
+  - hydra: default.yaml
+  - partitions: volume
+  - _self_
+
+model_checkpoint:
+  dirpath: ${paths.output_dir} ## Added in <cid>/<round>/checkpoints/
+  filename: "epoch_{epoch:03d}"
+  save_last: True
+  auto_insert_metric_name: False
+
+datamodule:
+  batch_size: 8
+  num_workers: 1
+
+task_name: "fed_chexpert"
+
+pool_size: 2
+
+client_resources:
+  num_cpus: 8
+  #num_gpus: 1
+
+ray_init_args:
+  include_dashboard: True
+
+strategy:
+  fraction_fit: 1.0
+  fraction_evaluate: 1.0
+  min_fit_clients : 1
+  min_evaluate_clients: 1
+  min_available_clients: 1
+  # evaluate_fn: 
+  #   _target_: src.flwr_client.get_evaluate_fn
+  #   cfg: "${client}"
+  # on_fit_config_fn: 
+  #   _target_: src.run_simulation.fit_config
+  accept_failures: True
+
+server_config:
+  _target_: flwr.server.ServerConfig
+  num_rounds: 3
+
