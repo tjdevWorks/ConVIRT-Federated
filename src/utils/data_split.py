@@ -43,7 +43,26 @@ def partition_volume(data, mode: str='uniform', num_clients: int=10, scale: int=
         partitions = np.split(data_indices, indices_or_sections=split_indexs) 
     results = dict(zip(np.arange(num_clients), partitions))
     return results
-      
+
+def partition_feature(data, feature, num_partitions, mode='nonIID'):
+    #sort the data according to age
+    sorted_data = data.sort_values(feature)
+    #split it like volume into equal no. of sets (would be based on percentiles)
+    split = np.array_split(sorted_data.index.tolist(), num_partitions)
+    if mode == 'uniform':
+        #redistribute them equally across all the clients
+        split_of_splits = list(map(lambda x: np.array_split(x, num_partitions), split))
+        print(split_of_splits)
+        uniform_splits = [[] * num_partitions] * num_partitions
+        for i in range(num_partitions):
+            #take every age distribution
+            for j in range(num_partitions):
+                #take every client partition and append a part of it
+                uniform_splits[j] = np.append(uniform_splits[j], split_of_splits[i][j])
+        split = uniform_splits                                          
+    result = dict(zip(np.arange(0, num_partitions), split))
+    return result     
+
 #test case for partition_class
 # result = partition_class(data, {} ,'single_client_per_class', 3, exclusive=False, equal_num_samples=True)     
 def partition_class(data, modeparams: Dict, mode: str='single_client_per_class', num_clients: int=1, exclusive: bool=False, equal_num_samples: bool=False, min_client_samples: int=0 ):
