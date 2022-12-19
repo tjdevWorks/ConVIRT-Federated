@@ -105,7 +105,7 @@ class FlowerClient(fl.client.NumPyClient):
         set_params(self.model, parameters)
 
         # Load data for this client and get trainloader
-        num_workers = int(ray.get_runtime_context().get_assigned_resources()["CPU"])
+        num_workers = len(ray.worker.get_resource_ids()["CPU"])#int(ray.get_runtime_context().get_assigned_resources()["CPU"])
         
         ## Create data loaders
         train_dataloader = self.datamodule.train_dataloader(num_workers=num_workers)
@@ -131,7 +131,7 @@ class FlowerClient(fl.client.NumPyClient):
         set_params(self.model, parameters)
 
         # Load data for this client and get trainloader
-        num_workers = int(ray.get_runtime_context().get_assigned_resources()["CPU"])
+        num_workers = len(ray.worker.get_resource_ids()["CPU"])#int(ray.get_runtime_context().get_assigned_resources()["CPU"])
         
         val_dataloader = self.datamodule.val_dataloader(num_workers=num_workers)
         
@@ -179,7 +179,8 @@ def get_evaluate_fn(
         
         model_dir = cfg.paths.output_dir + '/global_model_checkpoints/'
         os.makedirs(model_dir, exist_ok=True)
-        model_path = model_dir + f"round_{server_round}_{round(trainer.callback_metrics['test/aucroc'].item(), 4)}.pt"
+        test_auc_roc = str(round(trainer.callback_metrics['test/aucroc'].item(), 4)*100).replace('.', '_')
+        model_path = model_dir + f"round__{server_round}__{test_auc_roc}.pt"
         torch.save({
                     'epoch': server_round,
                     'model_state_dict': model.state_dict(),

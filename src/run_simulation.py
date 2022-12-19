@@ -34,6 +34,8 @@ def sim_run(cfg: DictConfig):
     
     client_resources = cfg.client_resources
     client_resources['num_gpus'] = 1 / cfg.pool_size
+
+    client_config_file = cfg.client_config_name
     
     ## Number of dataset partions (= number of total clients)
     pool_size = cfg.pool_size 
@@ -55,7 +57,7 @@ def sim_run(cfg: DictConfig):
 
     def client_fn(cid: str):
         # create a single client instance
-        return FlowerClient(cid, 'client/fed_client', partitions[int(cid)], hydra_runtime_log_dir)
+        return FlowerClient(cid, client_config_file, partitions[int(cid)], hydra_runtime_log_dir)
     
     server_config = hydra.utils.instantiate(cfg.server_config)
 
