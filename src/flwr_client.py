@@ -52,7 +52,7 @@ class FlowerClient(fl.client.NumPyClient):
 
         # Determine device
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    
+
     def load_client_config(self, config_fname):
         #print(f"Client: {self.cid}")
         hydra.core.global_hydra.GlobalHydra.instance().clear()
@@ -91,8 +91,6 @@ class FlowerClient(fl.client.NumPyClient):
 
         self.logger: List[LightningLoggerBase] = utils.instantiate_loggers(self.cfg.get("logger"))
 
-        #print(f"Creating trainer object, {self.cfg.trainer.default_root_dir, type(self.cfg.trainer.default_root_dir)}")
-        
         ## Create Trainer Object
         self.trainer: Trainer = hydra.utils.instantiate(self.cfg.trainer, callbacks=self.callbacks, logger=self.logger)
 

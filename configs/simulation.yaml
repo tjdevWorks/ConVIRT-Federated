@@ -14,19 +14,18 @@ model_checkpoint:
   auto_insert_metric_name: False
 
 datamodule:
-  batch_size: 8
-  num_workers: 1
-
+  batch_size: 4
+  
 task_name: "fed_chexpert"
 
-pool_size: 2
+pool_size: 4
 
 client_resources:
   num_cpus: 8
-  #num_gpus: 1
+  num_gpus: 0.3
 
 ray_init_args:
-  include_dashboard: True
+  include_dashboard: False
 
 strategy:
   fraction_fit: 1.0
@@ -34,14 +33,9 @@ strategy:
   min_fit_clients : 1
   min_evaluate_clients: 1
   min_available_clients: 1
-  # evaluate_fn: 
-  #   _target_: src.flwr_client.get_evaluate_fn
-  #   cfg: "${client}"
-  # on_fit_config_fn: 
-  #   _target_: src.run_simulation.fit_config
   accept_failures: True
 
 server_config:
   _target_: flwr.server.ServerConfig
-  num_rounds: 3
+  num_rounds: 5
 

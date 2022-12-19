@@ -5,7 +5,7 @@ default_root_dir: ${paths.output_dir}
 min_epochs: 1
 max_epochs: 1
 
-accelerator: cpu
+accelerator: gpu
 devices: 1
 
 # perform a validation loop every N training epochs

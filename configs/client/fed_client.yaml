@@ -14,11 +14,10 @@ defaults:
   - _self_
 
 datamodule:
-  batch_size: 8
-  num_workers: 1
+  batch_size: 4
   train_val_split: [0.9,0.1]
 
-datamodule_debug_mode: True
+datamodule_debug_mode: False
 
 # task name, determines output directory path
 #task_name: "fed_"
