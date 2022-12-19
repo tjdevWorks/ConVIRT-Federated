@@ -39,4 +39,4 @@ server_config:
   _target_: flwr.server.ServerConfig
   num_rounds: 5
 
-client_config_name: 'client/fed_client'
+client_config_name: 'client/fed_prod_client'

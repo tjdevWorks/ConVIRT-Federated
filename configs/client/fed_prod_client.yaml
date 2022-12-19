@@ -19,9 +19,6 @@ datamodule:
 
 datamodule_debug_mode: False
 
-# task name, determines output directory path
-#task_name: "fed_"
-
 # set False to skip model training
 train: True
 
