@@ -38,7 +38,7 @@ def partition_volume(data, mode: str='uniform', num_clients: int=10, scale: int=
     if mode == 'uniform':
         partitions = np.array_split(data_indices, num_clients)
     elif mode == 'dirchlet':    
-        vol_ratios = np.random.dirichlet(np.ones(num_clients*scale),size=1)[0]
+        vol_ratios = np.random.dirichlet(np.ones(num_clients)*scale,size=1)[0]
         split_indexs = torch.round(torch.tensor(np.cumsum(vol_ratios)*len(data_indices))).type(torch.IntTensor)
         partitions = np.split(data_indices, indices_or_sections=split_indexs) 
     results = dict(zip(np.arange(num_clients), partitions))
