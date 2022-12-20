@@ -5,7 +5,7 @@
 #SBATCH --time=5:00:00
 #SBATCH --mem=64GB
 #SBATCH --gres=gpu:a100:1
-#SBATCH --job-name=chexpert_finetune
+#SBATCH --job-name=chexpert_finetune_imagenet
 #SBATCH --output=/scratch/tm3647/MLH/ConVIRT-private/sbatch_outs/%j_0_log.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tm3647@nyu.edu
