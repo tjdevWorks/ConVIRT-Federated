@@ -1,4 +1,4 @@
-key: 'label'
+key: 'class'
 train_path: '/CheXpert-v1.0/train_new.csv'
 policy: 'one'
 modeparams:
