@@ -1,0 +1,8 @@
+key: 'feature'
+train_path: "/CheXpert-v1.0/train_new.csv" 
+policy: 'one'
+feature: 'Age' 
+num_partitions: 10
+mode: 'nonIID' #cab be ['nonIID', 'uniform'] 
+
+
