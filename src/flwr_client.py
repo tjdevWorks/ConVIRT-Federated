@@ -21,7 +21,7 @@ from src import utils
 
 # Flower client, adapted from Pytorch quickstart example
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self, cid: str, config_filename: str, indices: List, hydra_runtime_log_dir):
+    def __init__(self, cid: str, config_filename: str, indices: List, hydra_runtime_log_dir, batch_size_override:int=None):
         ## TODO: Think how can you have the clean up function setup like in utils.task_wrapper
         self.cid = cid
 
@@ -30,6 +30,9 @@ class FlowerClient(fl.client.NumPyClient):
 
         ## Reset certain cfg values
         cfg = self.reset_specific_cfg_values(cfg, hydra_runtime_log_dir)
+
+        if batch_size_override is not None:
+            cfg['datamodule']['batch_size'] = batch_size_override
 
         ## set seed for random number generators in pytorch, numpy and python.random
         if cfg.get("seed"):
@@ -77,7 +80,8 @@ class FlowerClient(fl.client.NumPyClient):
         ## logger csv save dir
         self.cfg['logger']['csv']['save_dir'] = str(Path(self.cfg['logger']['csv']['save_dir']) / f"{server_round}")
         ## callbacks model checkpoint
-        self.cfg['callbacks']['model_checkpoint']['dirpath'] = str(Path(self.cfg['callbacks']['model_checkpoint']['dirpath']) / f"{server_round}/checkpoints/")
+        self.cfg['callbacks']['model_checkpoint']['dirpath'] = str(Path(self.cfg['callbacks']['model_checkpoint']['dirpath']) / f"checkpoints/")
+        #str(Path(self.cfg['callbacks']['model_checkpoint']['dirpath']) / f"{server_round}/checkpoints/")
         
 
     def get_parameters(self, config):
@@ -88,6 +92,10 @@ class FlowerClient(fl.client.NumPyClient):
         self.set_server_round_dir(config["server_round"])
 
         self.callbacks: List[Callback] = utils.instantiate_callbacks(self.cfg.callbacks)
+
+        ## Delete the checkpoints dirpath last.ckpt
+        if os.path.exists(self.callbacks[0].dirpath+'/last.ckpt'):
+            os.remove(self.callbacks[0].dirpath+'/last.ckpt')
 
         self.logger: List[LightningLoggerBase] = utils.instantiate_loggers(self.cfg.get("logger"))
 

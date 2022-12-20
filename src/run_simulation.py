@@ -13,7 +13,7 @@ import hydra
 from omegaconf import DictConfig
 import flwr as fl
 from flwr.common.typing import Scalar
-from utils.data_split import process_traindata, partition_class, partition_volume
+from utils.data_split import process_traindata, partition_class, partition_volume, partition_feature
 import pytorch_lightning as pl
 
 from src import utils
@@ -46,7 +46,9 @@ def sim_run(cfg: DictConfig):
     if cfg.partitions.key == 'volume':
         partitions = partition_volume(dataframe, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.scale)
     elif cfg.partitions.key == 'class':
-        partitions = partition_class(dataframe, cfg.partitions.modeparams, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.exclusive, cfg.partitions.equal_num_samples, cfg.partitions.min_client_samples)     
+        partitions = partition_class(dataframe, cfg.partitions.modeparams, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.exclusive, cfg.partitions.equal_num_samples, cfg.partitions.min_client_samples)
+    elif cfg.partitions.key=="feature":
+        partitions = partition_feature(dataframe, cfg.partitions.feature, cfg.partitions.num_partitions, mode=cfg.partitions.mode)     
     
     ## Configure the strategy
     strategy = hydra.utils.instantiate(cfg.strategy)
@@ -57,7 +59,7 @@ def sim_run(cfg: DictConfig):
 
     def client_fn(cid: str):
         # create a single client instance
-        return FlowerClient(cid, client_config_file, partitions[int(cid)], hydra_runtime_log_dir)
+        return FlowerClient(cid, client_config_file, partitions[int(cid)], hydra_runtime_log_dir, cfg['datamodule']['batch_size'])
     
     server_config = hydra.utils.instantiate(cfg.server_config)
 
