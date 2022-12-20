@@ -3,7 +3,7 @@ defaults:
   - strategy: fed_avg
   - server: server_config
   - extras: default.yaml
-  - hydra: default.yaml
+  - hydra: fed_hydra.yaml
   - partitions: volume
   - _self_
 
@@ -40,3 +40,5 @@ server_config:
   num_rounds: 5
 
 client_config_name: 'client/fed_prod_client'
+
+job_name: "xyz"

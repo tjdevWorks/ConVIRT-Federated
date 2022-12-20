@@ -4,5 +4,3 @@ policy: 'one'
 feature: 'Age' 
 num_partitions: 10
 mode: 'nonIID' #cab be ['nonIID', 'uniform'] 
-
-
