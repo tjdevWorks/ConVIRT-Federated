@@ -66,7 +66,7 @@ def partition_feature(data, feature, num_partitions, mode='nonIID'):
 
 #test case for partition_class
 # result = partition_class(data, {} ,'single_client_per_class', 3, exclusive=False, equal_num_samples=True)     
-def partition_class(data, modeparams: Dict, mode: str='single_client_per_class', num_clients: int=1, exclusive: bool=False, equal_num_samples: bool=False, min_client_samples: int=0 ):
+def partition_class(data, modeparams: Dict, mode: str='single_client_per_class', num_clients: int=1, exclusive: bool=False, equal_num_samples: bool=False, min_client_samples: int=0, sample_percent=1 ):
     #distribute classes accordingly. 
     labels = modeparams['labels']
     num_labels = len(labels)
@@ -101,6 +101,9 @@ def partition_class(data, modeparams: Dict, mode: str='single_client_per_class',
             generate_samples = list(map(lambda x: random.sample(x, min_num_samples), results.values()))
             results = dict(zip(np.arange(num_clients), generate_samples))
     
+    results_splits = results.values()    
+    sampled_results_splits = list(map(lambda x: random.sample(x, int(np.round(len(x)*sample_percent))), results_splits))
+    results = dict(zip(np.arange(num_clients), sampled_results_splits))
     return results
             
 
