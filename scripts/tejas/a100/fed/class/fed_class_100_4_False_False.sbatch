@@ -2,7 +2,7 @@
     
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=28
-#SBATCH --time=4:30:00
+#SBATCH --time=6:00:00
 #SBATCH --mem=128GB
 #SBATCH --gres=gpu:a100:1
 #SBATCH --job-name=fed_class_100_4_False_False
