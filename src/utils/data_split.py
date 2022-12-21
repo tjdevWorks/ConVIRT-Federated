@@ -33,7 +33,7 @@ def reverse_dict(label_client_dict):
 #Volume split - doesn't look at y at all!
 #test case for partition_volume
 #result = partition_volume(data, 'dirchlet', 10, 1 )
-def partition_volume(data, mode: str='uniform', num_clients: int=10, scale: int=1):
+def partition_volume(data, mode: str='uniform', num_clients: int=10, scale: int=1, sample_percent=1):
     data_indices = np.arange(len(data))
     if mode == 'uniform':
         partitions = np.array_split(data_indices, num_clients)
@@ -41,7 +41,8 @@ def partition_volume(data, mode: str='uniform', num_clients: int=10, scale: int=
         vol_ratios = np.random.dirichlet(np.ones(num_clients)*scale,size=1)[0]
         split_indexs = torch.round(torch.tensor(np.cumsum(vol_ratios)*len(data_indices))).type(torch.IntTensor)
         partitions = np.split(data_indices, indices_or_sections=split_indexs) 
-    results = dict(zip(np.arange(num_clients), partitions))
+    sampled_partitions = list(map(lambda x: np.random.choice(x, size=int(np.round(len(x)*sample_percent)), replace=False), partitions))
+    results = dict(zip(np.arange(num_clients), sampled_partitions))
     return results
 
 def partition_feature(data, feature, num_partitions, mode='nonIID'):
@@ -59,7 +60,7 @@ def partition_feature(data, feature, num_partitions, mode='nonIID'):
             for j in range(num_partitions):
                 #take every client partition and append a part of it
                 uniform_splits[j] = np.append(uniform_splits[j], split_of_splits[i][j])
-        split = uniform_splits                                          
+        split = list(map(lambda x: x.astype(int), uniform_splits))                                          
     result = dict(zip(np.arange(0, num_partitions), split))
     return result     
 
@@ -80,17 +81,17 @@ def partition_class(data, modeparams: Dict, mode: str='single_client_per_class',
              
         for j in range(num_clients):
             client_labels = client_label_dict[j]
-            non_client_labels = np.setdiff1d(label_indices, client_labels)
+            non_client_labels = np.setdiff1d(label_indices, client_labels).astype(int)
             filtered_data = data
-            for k in client_labels:
-                filtered_data = filtered_data[filtered_data.loc[:, list(map(lambda x: labels[x], client_labels))].any(axis=1)]
+            # for k in client_labels:
+            filtered_data = filtered_data[filtered_data.loc[:, list(map(lambda x: labels[x], client_labels))].any(axis=1)]
             #Filter based on all other labels if exclusive
             if exclusive==True:   
-                non_client_labels = np.setdiff1d(label_indices, client_labels)
-                for k in non_client_labels:
-                    #it's going to be !( or of all other classes )
-                    filtered_data = filtered_data[~filtered_data.loc[:, list(map(lambda x: labels[x], non_client_labels))].any(axis=1)]
-                    #filtered_data = filtered_data.loc[filtered_data[labels[k]]==0]   
+                non_client_labels = np.setdiff1d(label_indices, client_labels).astype(int)
+                # for k in non_client_labels:
+                #it's going to be !( or of all other classes )
+                filtered_data = filtered_data[~filtered_data.loc[:, list(map(lambda x: labels[x], non_client_labels.tolist()))].any(axis=1)]
+                #filtered_data = filtered_data.loc[filtered_data[labels[k]]==0]   
             results[j] = filtered_data['index'].tolist()      
 
         min_num_samples = min(list(map(lambda x: len(x), results.values())))
