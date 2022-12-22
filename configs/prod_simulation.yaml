@@ -42,3 +42,5 @@ server_config:
 client_config_name: 'client/fed_prod_client'
 
 job_name: "xyz"
+
+sample_percent: 1

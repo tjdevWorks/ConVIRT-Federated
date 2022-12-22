@@ -44,9 +44,9 @@ def sim_run(cfg: DictConfig):
     dataframe = process_traindata(cfg.partitions.train_path, cfg.partitions.policy)
 
     if cfg.partitions.key == 'volume':
-        partitions = partition_volume(dataframe, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.scale)
+        partitions = partition_volume(dataframe, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.scale, sample_percent=cfg.sample_percent)
     elif cfg.partitions.key == 'class':
-        partitions = partition_class(dataframe, cfg.partitions.modeparams, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.exclusive, cfg.partitions.equal_num_samples, cfg.partitions.min_client_samples)
+        partitions = partition_class(dataframe, cfg.partitions.modeparams, cfg.partitions.mode, cfg.partitions.num_clients, cfg.partitions.exclusive, cfg.partitions.equal_num_samples, cfg.partitions.min_client_samples, cfg.sample_percent)
     elif cfg.partitions.key=="feature":
         partitions = partition_feature(dataframe, cfg.partitions.feature, cfg.partitions.num_partitions, mode=cfg.partitions.mode)     
     

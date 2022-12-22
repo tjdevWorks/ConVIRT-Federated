@@ -1,0 +1,38 @@
+# @package _global_
+
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
+defaults:
+  - /datamodule: chexpert.yaml
+  - /model: chexpert_finetune_model.yaml
+  - /callbacks: fed_client_callbacks.yaml
+  - /logger: csv # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - /paths: chexpert_fedml_paths.yaml
+  - /trainer: fed_client_trainer.yaml
+  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  - /debug: null
+  - _self_
+
+trainer:
+  max_epochs: 10
+
+datamodule:
+  batch_size: 64
+  train_val_split: [0.9,0.1]
+
+datamodule_debug_mode: False
+
+# set False to skip model training
+train: True
+
+# evaluate on test set, using best model weights achieved during training
+# lightning chooses best weights based on the metric specified in checkpoint callback
+test: False
+
+# simply provide checkpoint path to resume training
+ckpt_path: null
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: 42
+
+tags: ['dev']
