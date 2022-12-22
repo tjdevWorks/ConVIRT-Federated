@@ -137,3 +137,5 @@ data/*
 *.out
 
 logs/*
+
+mycommands.txt
