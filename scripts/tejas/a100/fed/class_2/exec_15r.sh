@@ -1,0 +1,16 @@
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_False_True_0-5.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_True_False_0-25.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_False_False_0-25.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_False_False_0-5.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_True_True_0-25.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_True_True_0-5.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_True_False_0-5.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/class_2/fed_class2_15_5_False_True_0-25.sbatch
+sleep 2

@@ -2,10 +2,10 @@
     
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=28
-#SBATCH --time=6:00:00
+#SBATCH --time=3:00:00
 #SBATCH --mem=128GB
 #SBATCH --gres=gpu:a100:1
-#SBATCH --job-name=fed_class_100_16_True_True
+#SBATCH --job-name=fed_vol6_100_16_1_dirchlet_1
 #SBATCH --output=/scratch/tm3647/MLH/ConVIRT-private/sbatch_outs/%j_0_log.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tm3647@nyu.edu
@@ -17,5 +17,5 @@ conda activate /ext3/fedml-env/;
 
 cd /scratch/tm3647/MLH/ConVIRT-private/;
 
-python src/run_simulation.py --config-name=prod_simulation server_config.num_rounds=100 pool_size=16 partitions=class partitions.num_clients=16 partitions.exclusive=True partitions.equal_num_samples=True task_name='fed_chexpert_class' job_name=fed_class_100_16_True_True datamodule.batch_size=64
+python src/run_simulation.py --config-name=prod_simulation server_config.num_rounds=100 pool_size=16 partitions.num_clients=16 partitions.scale=1 partitions.mode='dirchlet' task_name='fed_chexpert_volume5' job_name=fed_vol6_100_16_1_dirchlet_1 datamodule.batch_size=64 strategy.fraction_fit=1 sample_percent=0.01
 "

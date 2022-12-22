@@ -1,0 +1,12 @@
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_16_1000_dirchlet.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_8_1_dirchlet.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_4_1_dirchlet.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_16_1_dirchlet.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_8_1000_dirchlet.sbatch
+sleep 2
+sbatch /scratch/tm3647/MLH/ConVIRT-private/scripts/tejas/a100/fed/volume_2/fed_vol2_200_4_1000_dirchlet.sbatch
+sleep 2
